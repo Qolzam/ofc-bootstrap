@@ -1,4 +1,4 @@
-ignored = ["github.com/openfaas-incubator/ofc-bootstrap/tmp/*"]
+ignored = ["github.com/Qolzam/ofc-bootstrap/tmp/*"]
 
 [[constraint]]
   name = "gopkg.in/yaml.v2"

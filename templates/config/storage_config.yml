@@ -1,0 +1,6 @@
+environment:
+  storage_secret_path: "/var/openfaas/secrets/serviceAccountKey.json"
+  bucket_name: "{{bucket_name}}"
+  base_route: "/storage"
+  write_debug: "true"
+  exec_timeout: 20

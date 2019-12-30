@@ -3,7 +3,7 @@
 
 export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
 
-cd $GOPATH/src/github.com/openfaas-incubator/ofc-bootstrap
+cd $GOPATH/src/github.com/Qolzam/ofc-bootstrap
 
 # Fake the secrets from init.yaml
 mkdir -p ~/Downloads

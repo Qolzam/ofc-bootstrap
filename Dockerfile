@@ -7,7 +7,7 @@ ENV CGO_ENABLED=0
 WORKDIR /usr/bin/
 RUN curl -sLSf https://raw.githubusercontent.com/alexellis/license-check/master/get.sh | sh
 
-WORKDIR /go/src/github.com/openfaas-incubator/ofc-bootstrap
+WORKDIR /go/src/github.com/Qolzam/ofc-bootstrap
 COPY . .
 
 # Run a gofmt and exclude all vendored code.
@@ -18,8 +18,8 @@ RUN go test $(go list ./... | grep -v /vendor/ | grep -v /template/|grep -v /bui
     && VERSION=$(git describe --all --exact-match `git rev-parse HEAD` | grep tags | sed 's/tags\///') \
     && GIT_COMMIT=$(git rev-list -1 HEAD) \
     && CGO_ENABLED=0 GOOS=linux go build --ldflags "-s -w \
-    -X github.com/openfaas-incubator/ofc-bootstrap/version.GitCommit=${GIT_COMMIT} \
-    -X github.com/openfaas-incubator/ofc-bootstrap/version.Version=${VERSION}" \
+    -X github.com/Qolzam/ofc-bootstrap/version.GitCommit=${GIT_COMMIT} \
+    -X github.com/Qolzam/ofc-bootstrap/version.Version=${VERSION}" \
     -a -installsuffix cgo -o ofc-bootstrap
 
 # Release stage
@@ -29,7 +29,7 @@ RUN apk --no-cache add ca-certificates git
 
 WORKDIR /root/
 
-COPY --from=builder /go/src/github.com/openfaas-incubator/ofc-bootstrap/ofc-bootstrap               /usr/bin/
+COPY --from=builder /go/src/github.com/Qolzam/ofc-bootstrap/ofc-bootstrap               /usr/bin/
 
 ENV PATH=$PATH:/usr/bin/
 

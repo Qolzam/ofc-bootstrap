@@ -13,13 +13,13 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/openfaas-incubator/ofc-bootstrap/pkg/validators"
+	"github.com/Qolzam/ofc-bootstrap/pkg/validators"
 
+	"github.com/Qolzam/ofc-bootstrap/pkg/ingress"
+	"github.com/Qolzam/ofc-bootstrap/pkg/stack"
+	"github.com/Qolzam/ofc-bootstrap/pkg/tls"
+	"github.com/Qolzam/ofc-bootstrap/pkg/types"
 	"github.com/alexellis/go-execute"
-	"github.com/openfaas-incubator/ofc-bootstrap/pkg/ingress"
-	"github.com/openfaas-incubator/ofc-bootstrap/pkg/stack"
-	"github.com/openfaas-incubator/ofc-bootstrap/pkg/tls"
-	"github.com/openfaas-incubator/ofc-bootstrap/pkg/types"
 	yaml "gopkg.in/yaml.v2"
 )
 

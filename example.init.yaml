@@ -54,45 +54,37 @@ secrets:
   ## This value is used by Github to talk to system-github-event, the password will be
   ## generated if left blank. Alternatively, you can enter a password here of your own.
   ## Enter it into the GitHub App's UI.
-  - name: "github-webhook-secret"
+  - name: "secrets"
     literals:
-      - name: "github-webhook-secret"
+      - name: "mongo-pwd"
         value: ""
-    filters:
-      - "scm_github"
-    namespace: "openfaas-fn"
-
-  # Download from GitHub App on GitHub UI
-  - name: "private-key"
+      - name: "recaptcha-key"
+        value: ""
+      - name: "ts-client-secret"
+        value: ""
+      - name: "redis-pwd"
+        value: ""
+      - name: "admin-username"
+        value: ""
+      - name: "admin-password"
+        value: ""
+      - name: "payload-secret"
+        value: ""
+      - name: "ref-email-pass"
+        value: ""
+      - name: "phone-auth-token"
+        value: ""
+      - name: "phone-auth-id"
+        value: ""
     files:
-      - name: "private-key"
-        value_from: "~/Downloads/private-key.pem"
+      - name: "key"
+        value_from: "~/Downloads/key"
+      - name: "key.pub"
+        value_from: "~/Downloads/key.pub"
+      - name: "serviceAccountKey.json"
+        value_from: "~/Downloads/serviceAccountKey.json"
     filters:
-      - "scm_github"
-    namespace: "openfaas-fn"
-  # Populate your OAuth client_secret
-  - name: "of-client-secret"
-    literals:
-      - name: of-client-secret
-        value: "79163355e553b477957d977b0b8addd3c42ff52d"
-    filters:
-      - "auth"
-    namespace: "openfaas"
-
-  # Enter your GitLab Webhook secret and API token
-  - name: "gitlab-webhook-secret"
-    literals:
-      - name: "gitlab-webhook-secret"
-        value: ""
-    filters:
-      - "scm_gitlab"
-    namespace: "openfaas-fn"
-  - name: "gitlab-api-token"
-    literals:
-      - name: "gitlab-api-token"
-        value: "token"
-    filters:
-      - "scm_gitlab"
+      - "default"
     namespace: "openfaas-fn"
 
  # DNS Service Account secret for DNS01 (wildcard) challenge
@@ -137,25 +129,6 @@ secrets:
       - "cloudflare_dns01"
     namespace: "cert-manager"
 
-  # Used by Buildkit to push images to your registry
-  - name: "registry-secret"
-    files:
-      - name: "config.json"
-        value_from: "./credentials/config.json"
-    filters:
-      - "default"
-    namespace: "openfaas"
-
-  # Used to pull functions / images to nodes by Kubernetes
-  - name: "registry-pull-secret"
-    files:
-      - name: ".dockerconfigjson"
-        value_from: "./credentials/config.json"
-    namespace: "openfaas-fn"
-    filters:
-      - "default"
-    type: "kubernetes.io/dockerconfigjson"
-
     # ECR credentials to push to AWS ECR
     ## Make sure you do not use your admin account in ~/.aws/credentials, but a
     ## new user with ECR power-user permissions only.
@@ -198,16 +171,6 @@ ingress: loadbalancer
 ### Uncomment if using on-premises or a host/cloud without a loadbalancer
 # ingress: host
 
-## Define the custom templates available for your users
-### If needed edit the git-tar Deployment after running the tool
-deployment:
-  custom_templates:
-    - "https://github.com/openfaas-incubator/node8-express-template.git"
-    - "https://github.com/openfaas-incubator/golang-http-template.git"
-    - "https://github.com/openfaas-incubator/node10-express-template.git"
-    - "https://github.com/openfaas-incubator/python-flask-template.git"
-    - "https://github.com/openfaas-incubator/ruby-http"
-
 ## Source Control Management
 ### Pick either github or gitlab
 scm: github
@@ -216,11 +179,6 @@ scm: github
 ## Populate from GitHub App
 github:
   app_id: "24304"
-
-## GitLab
-### Public URL for your GitLab instance with a trailing slash
-gitlab:
-  gitlab_instance: "https://gitlab.o6s.io/"
 
 ## Populate from OAuth App
 oauth:
@@ -237,11 +195,6 @@ oauth:
 ### You can edit this after deployment if needed in the audit function
 slack:
   url: http://gateway.openfaas:8080/function/echo
-
-### Users allowed to access your OpenFaaS Cloud
-#### ACL for your users, it must be a raw text file or GitHub RAW URL
-#### At time of writing this _must_ be a public repo URL
-customers_url: "https://raw.githubusercontent.com/openfaas/openfaas-cloud/master/CUSTOMERS"
 
 ##  S3 configuration
 ### Build logs from buildkit are stored in S3

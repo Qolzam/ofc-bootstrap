@@ -6,18 +6,21 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/openfaas-incubator/ofc-bootstrap/pkg/types"
+	"github.com/Qolzam/ofc-bootstrap/pkg/types"
 )
 
 type gatewayConfig struct {
-	Registry             string
-	RootDomain           string
-	CustomersURL         string
-	Scheme               string
-	S3                   types.S3
-	CustomTemplates      string
-	EnableDockerfileLang bool
-	BuildBranch          string
+	Origin           string
+	WebDomain        string
+	ExternalDomain   string
+	CookieRootDomain string
+	Scheme           string
+	Domain           string
+	WebSocketURL     string
+}
+
+type serverWebConfig struct {
+	PrettyURL bool
 }
 
 type authConfig struct {
@@ -37,62 +40,23 @@ func Apply(plan types.Plan) error {
 	}
 
 	gwConfigErr := generateTemplate("gateway_config", plan, gatewayConfig{
-		Registry:             plan.Registry,
-		RootDomain:           plan.RootDomain,
-		CustomersURL:         plan.CustomersURL,
-		Scheme:               scheme,
-		S3:                   plan.S3,
-		CustomTemplates:      plan.Deployment.FormatCustomTemplates(),
-		EnableDockerfileLang: plan.EnableDockerfileLang,
-		BuildBranch:          plan.BuildBranch,
+		Origin:           plan.Origin,
+		WebDomain:        plan.WebDomain,
+		ExternalDomain:   plan.ExternalDomain,
+		CookieRootDomain: plan.CookieRootDomain,
+		Scheme:           scheme,
+		Domain:           plan.Domain,
+		WebSocketURL:     plan.WebSocketURL,
 	})
 
 	if gwConfigErr != nil {
 		return gwConfigErr
 	}
 
-	githubConfigErr := generateTemplate("github", plan, types.Github{
-		AppID:          plan.Github.AppID,
-		PrivateKeyFile: plan.Github.PrivateKeyFile,
-	})
-	if githubConfigErr != nil {
-		return githubConfigErr
-	}
-
-	if slackConfigErr := generateTemplate("slack", plan, types.Slack{
-		URL: plan.Slack.URL,
+	if slackConfigErr := generateTemplate("server_web_config", plan, serverWebConfig{
+		PrettyURL: plan.PrettyURL,
 	}); slackConfigErr != nil {
 		return slackConfigErr
-	}
-
-	if plan.SCM == "gitlab" {
-		gitlabConfigErr := generateTemplate("gitlab", plan, types.Gitlab{
-			GitLabInstance: plan.Gitlab.GitLabInstance,
-		})
-		if gitlabConfigErr != nil {
-			return gitlabConfigErr
-		}
-	}
-
-	dashboardConfigErr := generateTemplate("dashboard_config", plan, gatewayConfig{
-		RootDomain: plan.RootDomain, Scheme: scheme,
-	})
-	if dashboardConfigErr != nil {
-		return dashboardConfigErr
-	}
-
-	if plan.EnableOAuth {
-		ofAuthDepErr := generateTemplate("edge-auth-dep", plan, authConfig{
-			RootDomain:           plan.RootDomain,
-			ClientId:             plan.OAuth.ClientId,
-			CustomersURL:         plan.CustomersURL,
-			Scheme:               scheme,
-			OAuthProvider:        plan.SCM,
-			OAuthProviderBaseURL: plan.OAuth.OAuthProviderBaseURL,
-		})
-		if ofAuthDepErr != nil {
-			return ofAuthDepErr
-		}
 	}
 
 	isGitHub := plan.SCM == "github"
@@ -100,16 +64,13 @@ func Apply(plan types.Plan) error {
 		GitHub: isGitHub,
 	})
 
-	if stackErr != nil {
-		return stackErr
+	copyConfigErr := copyConfigFiles()
+	if copyConfigErr != nil {
+		return copyConfigErr
 	}
 
-	builderErr := generateTemplate("of-builder-dep", plan, builderConfig{
-		ECR: plan.EnableECR,
-	})
-
-	if builderErr != nil {
-		return builderErr
+	if stackErr != nil {
+		return stackErr
 	}
 
 	return nil
@@ -145,6 +106,11 @@ func generateTemplate(fileName string, plan types.Plan, templateType interface{}
 	}
 
 	return nil
+}
+
+func copyConfigFiles() error {
+	err := copyDirectory("templates/config", "./tmp/config")
+	return err
 }
 
 func applyTemplate(templateFileName string, templateType interface{}) ([]byte, error) {

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/openfaas-incubator/ofc-bootstrap/pkg/types"
+	"github.com/Qolzam/ofc-bootstrap/pkg/types"
 )
 
 func Test_filterDNSFeature(t *testing.T) {

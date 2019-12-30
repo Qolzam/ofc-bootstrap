@@ -6,8 +6,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/Qolzam/ofc-bootstrap/pkg/types"
 	"github.com/alexellis/go-execute"
-	"github.com/openfaas-incubator/ofc-bootstrap/pkg/types"
 )
 
 // TLSTemplate TLS configuration
